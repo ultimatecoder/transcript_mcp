@@ -45,8 +45,8 @@ class _YtStandardUrlAttributeExtractor(_YtURLAttributeExtractor):
                 (len(parsed_query_params[self._VIDEO_QUERY_PARAM]) == 1)):
             return parsed_query_params[self._VIDEO_QUERY_PARAM][0]
         raise (ValueError(
-            "Given URL {url} is invalid because does not contain required query param {param}.".format(url=url,
-                                                                                                       param=self._VIDEO_QUERY_PARAM)))
+            "Given URL {url} is invalid because does not contain required query param {param}.".format(
+                url=url, param=self._VIDEO_QUERY_PARAM)))
 
     def can_handle(self, url: str) -> bool:
         parsed_url = urlparse(url)
