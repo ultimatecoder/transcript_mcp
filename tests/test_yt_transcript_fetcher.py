@@ -5,9 +5,9 @@ from requests import HTTPError
 from youtube_transcript_api import (YouTubeRequestFailed, VideoUnavailable, InvalidVideoId, AgeRestricted,
                                     YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled)
 
-from yt_mcp.transcript.entities import TranscriptLanguage, Transcript
-from yt_mcp.transcript.errors import ServiceUnavailable, VideoNotFound, AuthRequired, TranscriptNotFound
-from yt_mcp.transcript.transcript_fetcher.transcript_fetcher import YtTranscriptAPIBasedFetcher
+from transcript_mcp.transcript.entities import TranscriptLanguage, Transcript
+from transcript_mcp.transcript.errors import ServiceUnavailable, VideoNotFound, AuthRequired, TranscriptNotFound
+from transcript_mcp.transcript.transcript_fetcher.transcript_fetcher import YtTranscriptAPIBasedFetcher
 from tests.yt_data_helper import YtDataHelper, YouTubeTranscriptApiDataHelper, YtTranscriptAPIBasedFetcherDataHelper
 
 

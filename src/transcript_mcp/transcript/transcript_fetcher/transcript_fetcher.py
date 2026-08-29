@@ -4,8 +4,8 @@ from typing import Dict, Optional
 from youtube_transcript_api import YouTubeTranscriptApi, FetchedTranscript, YouTubeRequestFailed, VideoUnavailable, \
     InvalidVideoId, AgeRestricted, NoTranscriptFound, TranscriptsDisabled
 
-from yt_mcp.transcript.entities import TranscriptLanguage, Transcript
-from yt_mcp.transcript.errors import ServiceUnavailable, UnknownException, VideoNotFound, AuthRequired, \
+from transcript_mcp.transcript.entities import TranscriptLanguage, Transcript
+from transcript_mcp.transcript.errors import ServiceUnavailable, UnknownException, VideoNotFound, AuthRequired, \
     TranscriptNotFound, DataError
 
 

@@ -1,7 +1,7 @@
 [project]
-name = "yt-mcp"
+name = "transcript-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server that downloads video transcripts. Supports YouTube."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

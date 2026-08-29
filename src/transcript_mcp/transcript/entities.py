@@ -4,7 +4,7 @@ from typing import List
 
 from youtube_transcript_api import FetchedTranscriptSnippet, FetchedTranscript
 
-from yt_mcp.transcript.errors import DataError
+from transcript_mcp.transcript.errors import DataError
 
 
 class TranscriptLanguage(Enum):

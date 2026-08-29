@@ -2,9 +2,9 @@ from mcp.server.fastmcp import FastMCP
 from typing import Annotated
 from pydantic import Field
 
-from yt_mcp.transcript.entities import Transcript, TranscriptMetadata, TranscriptLanguage, TranscriptLineItem
+from transcript_mcp.transcript.entities import Transcript, TranscriptMetadata, TranscriptLanguage, TranscriptLineItem
 
-server = FastMCP(name="yt_mcp", host="0.0.0.0", port=8000)
+server = FastMCP(name="transcript-mcp", host="0.0.0.0", port=8000)
 
 
 @server.tool()

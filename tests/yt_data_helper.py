@@ -1,7 +1,7 @@
 from typing import List
 from youtube_transcript_api import FetchedTranscript, FetchedTranscriptSnippet
 
-from yt_mcp.transcript.entities import TranscriptLanguage, Transcript, TranscriptMetadata, TranscriptLineItem
+from transcript_mcp.transcript.entities import TranscriptLanguage, Transcript, TranscriptMetadata, TranscriptLineItem
 
 
 class YtDataHelper:

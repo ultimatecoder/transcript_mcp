@@ -2,7 +2,7 @@ import pytest
 
 from tests.yt_url_factory import YtURLFactory, YtURLType
 from tests.yt_data_helper import YtDataHelper
-from yt_mcp.transcript.utils.yt_url_attribute_extractor import YtURLAttributeExtractorCoordinator
+from transcript_mcp.transcript.utils.yt_url_attribute_extractor import YtURLAttributeExtractorCoordinator
 
 # NOTE: Forced to create class-level static because @pytest.mark.parameterize() do not accept instance variable
 _URL_FACTORY = YtURLFactory(YtDataHelper.VIDEO_ID)
