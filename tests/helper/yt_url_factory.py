@@ -1,5 +1,6 @@
 from typing import Dict
-from tests.yt_url_type import YtURLType
+
+from tests.helper.yt_url_type import YtURLType
 
 
 class YtURLFactory:

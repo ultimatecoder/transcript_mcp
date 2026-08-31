@@ -4,8 +4,10 @@ from urllib.parse import urlparse, parse_qs
 import pygtrie
 from pygtrie import PrefixSet
 
+from transcript_mcp.transcript.utils._yt_data_helper import YtDataHelper
 
-class _YtURLAttributeExtractor(ABC):
+
+class YtURLAttributeExtractor(ABC):
     """Use this to drive an attribute from a Youtube URL"""
 
     @abstractmethod
@@ -19,15 +21,9 @@ class _YtURLAttributeExtractor(ABC):
         pass
 
 
-class _YtStandardUrlAttributeExtractor(_YtURLAttributeExtractor):
+class YtStandardUrlAttributeExtractor(YtURLAttributeExtractor):
     """Use this to derive an attribute from a standard Youtube URL.
     For example: https://www.youtube.com/watch?v=abcXyz"""
-    _YT_SUPPORTED_URLS: List[str] = [
-        "https://youtube.com/watch",
-        "http://youtube.com/watch",
-        "https://www.youtube.com/watch",
-        "http://www.youtube.com/watch",
-    ]
     _VIDEO_QUERY_PARAM = "v"
     _PATH_PARAM_WATCH = "/watch"
 
@@ -36,7 +32,7 @@ class _YtStandardUrlAttributeExtractor(_YtURLAttributeExtractor):
         self._add_supported_urls()
 
     def _add_supported_urls(self):
-        for url in self._YT_SUPPORTED_URLS:
+        for url in YtDataHelper.YT_LONG_URLS:
             self._supported_urls_trie_set.add(url)
 
     def extract_video_id(self, url: str) -> Optional[str]:
@@ -54,14 +50,10 @@ class _YtStandardUrlAttributeExtractor(_YtURLAttributeExtractor):
                 (parsed_url.path == self._PATH_PARAM_WATCH))
 
 
-class _YtShortUrlAttributeExtractor(_YtURLAttributeExtractor):
+class YtShortUrlAttributeExtractor(YtURLAttributeExtractor):
     """Use this to derive an attribute from a short Youtube URL.
     For example: https://youtu.be/abcXyz"""
 
-    _YT_SUPPORTED_URLS: List[str] = [
-        "https://youtu.be/",
-        "http://youtu.be/",
-    ]
     _PATH_SEPARATOR: str = "/"
 
     def __init__(self):
@@ -69,7 +61,7 @@ class _YtShortUrlAttributeExtractor(_YtURLAttributeExtractor):
         self._add_supported_urls()
 
     def _add_supported_urls(self):
-        for url in self._YT_SUPPORTED_URLS:
+        for url in YtDataHelper.YT_SHORT_URLS:
             self._supported_urls_trie_set.add(url)
 
     def extract_video_id(self, url: str) -> Optional[str]:
@@ -87,15 +79,14 @@ class _YtShortUrlAttributeExtractor(_YtURLAttributeExtractor):
 
 class YtURLAttributeExtractorCoordinator:
 
-    # TODO: Add support for "m.youtube.com"
-    _YOUTUBE_URL_ATTRIBUTE_DERIVER_REGISTRY: List[_YtURLAttributeExtractor] = [
-        _YtStandardUrlAttributeExtractor(),
-        _YtShortUrlAttributeExtractor()
-    ]
+    def __init__(self, yt_url_attribute_deriver_registry) -> None:
+        if (yt_url_attribute_deriver_registry is None) or (len(yt_url_attribute_deriver_registry) == 0):
+            raise ValueError("yt_url_attribute_deriver_registry can not be null or empty")
+        self._yt_url_attribute_deriver_registry = yt_url_attribute_deriver_registry
 
     def extract_video_id(self, url: str) -> str:
         """Extract the 11 character video ID from a Youtube URL."""
-        for url_attribute_deriver in self._YOUTUBE_URL_ATTRIBUTE_DERIVER_REGISTRY:
-            if url_attribute_deriver.can_handle(url):
-                return url_attribute_deriver.extract_video_id(url)
+        for url_attribute_deriver in self._yt_url_attribute_deriver_registry:
+            if url_attribute_deriver.can_handle(url=url):
+                return url_attribute_deriver.extract_video_id(url=url)
         raise ValueError("Given URL {url} is invalid.".format(url=url))
