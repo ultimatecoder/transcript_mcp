@@ -6,6 +6,7 @@ from transcript_mcp.transcript.entities import Language, TranscriptMetadata, Tra
 from transcript_mcp.transcript.errors import DataError
 
 
+# TODO: Write unit test for each mapper
 class LanguageMapper:
     """Use this mapper to map entity to Language entity"""
 
@@ -21,7 +22,7 @@ class LanguageMapper:
 
     @staticmethod
     def from_yt_language_code(yt_language_code: str) -> Language:
-        if (yt_language_code is None) or (yt_language_code is ""):
+        if (yt_language_code is None) or (yt_language_code == ""):
             raise ValueError("Youtube Transcript Api language code can not be null or empty")
 
         if yt_language_code not in LanguageMapper._YT_LANGUAGE_CODE_TO_LANGUAGE_MAPPING:

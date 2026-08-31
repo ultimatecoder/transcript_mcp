@@ -10,19 +10,12 @@ server = FastMCP(name="transcript-mcp", host="0.0.0.0", port=8000)
 
 @server.tool()
 def get_transcript(url: Annotated[str, Field(description="URL of a video")]) -> Transcript:
-    """This tool is responsible for downloading transcript of a video from its urls. Below are supported services:
+    """This tool is responsible for downloading transcript of a video. Provide video URL and this tool will try to
+    fetch transcript if it supports respective provider. Below are supported transcript providers:
         - Youtube
     """
     transcript_provider_manager = Factory.create_transcript_provider_manager()
     return transcript_provider_manager.get_transcript(url)
-    #return Transcript(
-    #    metadata=TranscriptMetadata(language=TranscriptLanguage.English, video_id="video123"),
-    #    transcripts=[
-    #        TranscriptLineItem(start_time=0.1, text="This is first line"),
-    #        TranscriptLineItem(start_time=0.2, text="This is second line"),
-    #        TranscriptLineItem(start_time=0.3, text="This is third line"),
-    #    ]
-    #)
 
 
 if __name__ == "__main__":
