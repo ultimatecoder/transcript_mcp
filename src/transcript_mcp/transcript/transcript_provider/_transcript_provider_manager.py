@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from typing import List
 
 from transcript_mcp.transcript.entities import Transcript

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from typing import List
 from youtube_transcript_api import FetchedTranscript, FetchedTranscriptSnippet
 

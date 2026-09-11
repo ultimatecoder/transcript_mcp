@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from mcp.server.fastmcp import FastMCP
 from typing import Annotated
 from pydantic import Field

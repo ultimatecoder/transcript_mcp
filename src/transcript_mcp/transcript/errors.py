@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 class _BaseError(Exception):
     """Defines exception that can be retriable after some interval"""
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from typing import Dict
 
 from tests.helper.yt_url_type import YtURLType

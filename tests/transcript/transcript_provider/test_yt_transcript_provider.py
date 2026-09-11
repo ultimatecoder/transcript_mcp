@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from unittest.mock import Mock
 
 import pytest

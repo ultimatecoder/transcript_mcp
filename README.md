@@ -31,3 +31,9 @@ Where each error starts and what the caller receives. Library errors are transla
 ![Error translation diagram: youtube_transcript_api errors and checks inside the transcript package on the left map to the errors a caller receives on the right, grouped into RetriableError and NonRetriableError, plus DataError and the built-in ValueError](docs/uml/error-model.svg)
 
 The PlantUML sources are in [`docs/uml/`](docs/uml/). After editing a `.puml` file, re-render its `.svg` with PlantUML so the two stay in sync.
+
+## License
+
+Released under the [MIT License](LICENSE).
+
+The Claude, OpenAI, and YouTube logos in `docs/architecture.svg` and `docs/architecture.excalidraw` are trademarks of their respective owners. They are not covered by this project's license.
