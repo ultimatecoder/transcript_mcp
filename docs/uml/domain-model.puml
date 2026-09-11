@@ -1,0 +1,93 @@
+@startuml domain-model
+set separator none
+left to right direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Helvetica
+skinparam nodesep 30
+skinparam ranksep 90
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  BackgroundColor<<external>> #F2F2F2
+  BorderColor<<external>> #9E9E9E
+  FontColor<<external>> #616161
+}
+hide empty members
+hide <<external>> stereotype
+
+title transcript-mcp — Domain Model: External Entities → Mappers → Domain Entities
+caption Mappers are invoked by YtTranscriptApiBasedProvider (see the Request Flow diagram).
+
+package "External entities (youtube_transcript_api)" <<Folder>> #F5F5F5 {
+  class FetchedTranscript <<external>> {
+    + video_id: str
+    + language: str
+    + language_code: str
+    + is_generated: bool
+    + snippets: List[FetchedTranscriptSnippet]
+  }
+  class FetchedTranscriptSnippet <<external>> {
+    + text: str
+    + start: float
+    + duration: float
+  }
+}
+
+package "mappers" <<Frame>> #FFF6E0 {
+  class TranscriptMapper {
+    + {static} from_yt_fetched_transcript(fetched_transcript: FetchedTranscript): Transcript
+  }
+  class TranscriptMetadataMapper {
+    + {static} from_yt_fetched_transcript(fetched_transcript: FetchedTranscript): TranscriptMetadata
+  }
+  class TranscriptLineItemMapper {
+    + {static} from_yt_fetched_transcript_snippet(fetched_transcript_snippet: FetchedTranscriptSnippet): TranscriptLineItem
+  }
+  class LanguageMapper {
+    + {static} from_yt_language_code(yt_language_code: str): Language
+    + {static} to_yt_language_code(language: Language): str
+  }
+}
+
+package "domain entities" <<Frame>> #EAF2FF {
+  class Transcript <<dataclass(frozen)>> {
+    + metadata: TranscriptMetadata
+    + transcript_line_items: List[TranscriptLineItem]
+  }
+  class TranscriptMetadata <<dataclass(frozen)>> {
+    + video_id: str
+    + language: Language = ENGLISH
+  }
+  class TranscriptLineItem <<dataclass(frozen)>> {
+    + start_time: float
+    + text: str
+    + duration: float
+  }
+  enum Language {
+    ENGLISH = "en"
+  }
+}
+
+' translation flow: external entity -> mapper -> domain entity
+FetchedTranscript --> TranscriptMapper : input
+TranscriptMapper --> Transcript : output
+
+FetchedTranscript --> TranscriptMetadataMapper : input
+TranscriptMetadataMapper --> TranscriptMetadata : output
+
+FetchedTranscriptSnippet --> TranscriptLineItemMapper : input
+TranscriptLineItemMapper --> TranscriptLineItem : output
+
+FetchedTranscript --> LanguageMapper : language_code
+LanguageMapper --> Language : output
+
+' structure inside each lane (kept out of the left-to-right ranking)
+FetchedTranscript *-[norank]- "0..*" FetchedTranscriptSnippet
+TranscriptMapper .[norank].> TranscriptMetadataMapper : delegates
+TranscriptMapper .[norank].> TranscriptLineItemMapper : delegates
+TranscriptMetadataMapper .[norank].> LanguageMapper : delegates
+Transcript *-[norank]- "1" TranscriptMetadata
+Transcript *-[norank]- "0..*" TranscriptLineItem
+TranscriptMetadata -[norank]-> "1" Language
+@enduml

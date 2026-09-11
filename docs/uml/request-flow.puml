@@ -1,0 +1,124 @@
+@startuml request-flow
+set separator none
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Helvetica
+skinparam nodesep 25
+skinparam ranksep 45
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  BackgroundColor<<external>> #F2F2F2
+  BorderColor<<external>> #9E9E9E
+  FontColor<<external>> #616161
+  BackgroundColor<<ref>> #FAFAFA
+  BorderColor<<ref>> #BDBDBD
+  FontColor<<ref>> #9E9E9E
+}
+hide empty members
+hide <<ref>> stereotype
+
+title transcript-mcp — Request Flow & Providers
+caption Grey boxes are detailed in the Domain Model diagram.
+
+package "server" as server_module <<Frame>> {
+  class server <<module>> {
+    + server: FastMCP
+    + get_transcript(url: str): Transcript
+  }
+}
+
+package "transcript" <<Folder>> #EAF2FF {
+
+  package "factory" <<Frame>> {
+    class Factory {
+      + {static} create_transcript_provider_manager(): TranscriptProviderManager
+    }
+  }
+
+  package "transcript_provider_manager" <<Frame>> {
+    class TranscriptProviderManager {
+      + get_transcript(url: str): Transcript
+    }
+  }
+
+  package "transcript_provider" <<Frame>> {
+    abstract class TranscriptProvider <<ABC>> {
+      + {abstract} provide(url: str, language: Optional[Language] = ENGLISH): Transcript
+      + {abstract} can_provide(url: str): bool
+    }
+  }
+
+  package "yt_transcript_provider" <<Frame>> {
+    class YtTranscriptApiBasedProvider {
+      + provide(url: str, language: Optional[Language] = ENGLISH): Transcript
+      + can_provide(url: str): bool
+    }
+  }
+
+  package "mappers" <<Frame>> {
+    class TranscriptMapper <<ref>>
+    class LanguageMapper <<ref>>
+  }
+
+  package "yt_url_attribute_extractor" <<Frame>> {
+    class YtURLAttributeExtractorCoordinator {
+      + extract_video_id(url: str): str
+    }
+    abstract class YtURLAttributeExtractor <<ABC>> {
+      + {abstract} extract_video_id(url: str): Optional[str]
+      + {abstract} can_handle(url: str): bool
+    }
+    class YtStandardUrlAttributeExtractor {
+      + extract_video_id(url: str): Optional[str]
+      + can_handle(url: str): bool
+    }
+    class YtShortUrlAttributeExtractor {
+      + extract_video_id(url: str): Optional[str]
+      + can_handle(url: str): bool
+    }
+  }
+
+  package "yt_data_helper" <<Frame>> {
+    class YtDataHelper {
+      + {static} YT_SHORT_URLS: List[str]
+      + {static} YT_LONG_URLS: List[str]
+    }
+  }
+}
+
+package "External libraries" <<Folder>> #F5F5F5 {
+  class FastMCP <<external>> {
+    + tool()
+    + run(transport)
+  }
+  class YouTubeTranscriptApi <<external>> {
+    + fetch(video_id: str, languages: Iterable[str]): FetchedTranscript
+  }
+}
+
+server --> FastMCP
+server ..> Factory : create_transcript_provider_manager()
+server ..> TranscriptProviderManager : get_transcript(url)
+
+Factory ..> TranscriptProviderManager : <<creates>>
+Factory ..> YtTranscriptApiBasedProvider : <<creates>>
+Factory ..> YtURLAttributeExtractorCoordinator : <<creates>>
+Factory ..> YtStandardUrlAttributeExtractor : <<creates>>
+Factory ..> YtShortUrlAttributeExtractor : <<creates>>
+Factory ..> YouTubeTranscriptApi : <<creates>>
+
+TranscriptProviderManager o-- "1..*" TranscriptProvider
+YtTranscriptApiBasedProvider --|> TranscriptProvider
+YtTranscriptApiBasedProvider --> "1" YouTubeTranscriptApi : fetch()
+YtTranscriptApiBasedProvider --> "1" YtURLAttributeExtractorCoordinator : extract_video_id()
+YtTranscriptApiBasedProvider ..> YtDataHelper : <<uses>>
+YtTranscriptApiBasedProvider ..> TranscriptMapper : <<uses>>
+YtTranscriptApiBasedProvider ..> LanguageMapper : <<uses>>
+
+YtURLAttributeExtractorCoordinator o-- "1..*" YtURLAttributeExtractor
+YtStandardUrlAttributeExtractor --|> YtURLAttributeExtractor
+YtShortUrlAttributeExtractor --|> YtURLAttributeExtractor
+YtStandardUrlAttributeExtractor ..> YtDataHelper : <<uses>>
+YtShortUrlAttributeExtractor ..> YtDataHelper : <<uses>>
+@enduml
