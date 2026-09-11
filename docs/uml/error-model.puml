@@ -1,0 +1,69 @@
+@startuml error-model
+set separator none
+left to right direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Helvetica
+skinparam nodesep 20
+skinparam ranksep 110
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+}
+hide empty members
+hide circle
+hide stereotype
+
+title transcript-mcp — Error Model: Where Errors Start → What Callers Receive
+caption Library errors are translated by YtTranscriptApiBasedProvider. Each arrow shows the error a caller receives.
+
+package "Library errors (youtube_transcript_api)" <<Folder>> #F5F5F5 {
+  class YouTubeRequestFailed
+  class VideoUnavailable
+  class InvalidVideoId
+  class AgeRestricted
+  class NoTranscriptFound
+  class TranscriptsDisabled
+  class "any other exception" as AnyOther
+}
+
+package "Raised inside transcript" <<Folder>> #FFF6E0 {
+  class TranscriptProviderManager
+  class YtURLAttributeExtractorCoordinator
+  class "mappers" as Mappers
+}
+
+package "transcript errors (exposed to callers)" <<Folder>> #EAF2FF {
+  package "RetriableError (is_retriable = True)" <<Rectangle>> {
+    class ServiceUnavailable
+  }
+  package "NonRetriableError (is_retriable = False)" <<Rectangle>> {
+    class VideoNotFound
+    class AuthRequired
+    class TranscriptNotFound
+    class UnknownException
+    class NotSupportedError
+    class InvalidLink
+  }
+  class DataError
+}
+
+package "Python built-in" <<Folder>> #F5F5F5 {
+  class ValueError
+}
+
+note right of InvalidLink : defined, not raised
+
+YouTubeRequestFailed --> ServiceUnavailable
+VideoUnavailable --> VideoNotFound
+InvalidVideoId --> VideoNotFound
+AgeRestricted --> AuthRequired
+NoTranscriptFound --> TranscriptNotFound
+TranscriptsDisabled --> TranscriptNotFound
+AnyOther --> UnknownException
+
+TranscriptProviderManager --> NotSupportedError : no provider for URL
+TranscriptProviderManager --> ValueError : empty URL
+YtURLAttributeExtractorCoordinator --> ValueError : unrecognised URL
+Mappers --> DataError : invalid upstream data
+@enduml
